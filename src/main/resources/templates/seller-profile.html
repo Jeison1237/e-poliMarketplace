@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${seller != null ? seller.storeName + ' - E-Poli' : 'Vendedor'}">Vendedor</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="/" class="nav-logo"><i class="fas fa-store"></i> E-Poli</a>
+        <form class="nav-search" th:action="@{/products}" method="get">
+            <input type="text" name="keyword" placeholder="Buscar productos..." class="search-input">
+            <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
+        </form>
+        <div class="nav-actions">
+            <a href="/products" class="nav-link"><i class="fas fa-th-large"></i> Productos</a>
+            <div sec:authorize="isAuthenticated()">
+                <a href="/cart" class="nav-link cart-link"><i class="fas fa-shopping-cart"></i> Carrito</a>
+                <a href="/profile" class="nav-link"><i class="fas fa-user-circle"></i></a>
+                <a href="/logout" class="nav-link"><i class="fas fa-sign-out-alt"></i></a>
+            </div>
+            <div sec:authorize="isAnonymous()">
+                <a href="/login" class="btn btn-outline">Iniciar Sesión</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div th:if="${seller != null}">
+    <!-- Seller Banner -->
+    <div class="seller-banner">
+        <img th:src="${seller.bannerUrl != null ? seller.bannerUrl : 'https://via.placeholder.com/1400x300/4f46e5/ffffff?text=' + seller.storeName}"
+             th:alt="${seller.storeName}" class="banner-image">
+    </div>
+
+    <div class="container">
+        <!-- Seller Header -->
+        <div class="seller-profile-header">
+            <img th:src="${seller.logoUrl}" th:alt="${seller.storeName}" class="seller-profile-logo">
+            <div class="seller-profile-info">
+                <h1 th:text="${seller.storeName}">Nombre de Tienda</h1>
+                <div class="seller-meta">
+                    <span class="seller-rating">
+                        <i class="fas fa-star"></i> <span th:text="${seller.rating}">4.5</span>
+                    </span>
+                    <span class="seller-sales">
+                        <i class="fas fa-shopping-bag"></i> <span th:text="${seller.totalSales}">0</span> ventas
+                    </span>
+                    <span th:if="${seller.verified}" class="verified-badge">
+                        <i class="fas fa-check-circle"></i> Vendedor Verificado
+                    </span>
+                </div>
+                <p th:text="${seller.description}" class="seller-description">Descripción de la tienda...</p>
+                <p class="seller-since">
+                    <i class="fas fa-calendar"></i> Miembro desde
+                    <span th:text="${#temporals.format(seller.createdAt, 'MMMM yyyy')}">Enero 2024</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Products -->
+        <div class="seller-products-section">
+            <h2><i class="fas fa-box"></i> Productos de la Tienda
+                <span th:text="'(' + ${#lists.size(products)} + ')'"></span>
+            </h2>
+            <div class="products-grid" th:if="${!#lists.isEmpty(products)}">
+                <div class="product-card" th:each="product : ${products}">
+                    <a th:href="@{/products/{id}(id=${product.id})}">
+                        <img th:src="${product.imageUrl}" th:alt="${product.name}" class="product-image">
+                    </a>
+                    <div class="product-info">
+                        <span class="product-category" th:text="${product.category}">Categoría</span>
+                        <h3 class="product-name">
+                            <a th:href="@{/products/{id}(id=${product.id})}" th:text="${product.name}">Nombre</a>
+                        </h3>
+                        <div class="product-rating">
+                            <i class="fas fa-star"></i>
+                            <span th:text="${product.rating}">4.5</span>
+                        </div>
+                        <div class="product-footer">
+                            <span class="product-price" th:text="'$' + ${#numbers.formatDecimal(product.price, 1, 2)}">$0.00</span>
+                            <form th:action="@{/cart/add}" method="post" sec:authorize="isAuthenticated()">
+                                <input type="hidden" name="productId" th:value="${product.id}">
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="btn-add-cart"><i class="fas fa-cart-plus"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${#lists.isEmpty(products)}" class="empty-state">
+                <i class="fas fa-box-open"></i>
+                <p>Esta tienda no tiene productos aún.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-bottom">
+            <p>&copy; 2024 E-Poli. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</footer>
+
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

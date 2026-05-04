@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Poli - Compra y Vende Online</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="/" class="nav-logo">
+            <i class="fas fa-store"></i> E-Poli
+        </a>
+
+        <form class="nav-search" th:action="@{/products}" method="get">
+            <input type="text" name="keyword" placeholder="Buscar productos, vendedores..." class="search-input">
+            <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
+        </form>
+
+        <div class="nav-actions">
+            <a href="/products" class="nav-link"><i class="fas fa-th-large"></i> Productos</a>
+            <a href="/sellers" class="nav-link"><i class="fas fa-store-alt"></i> Tiendas</a>
+
+            <div sec:authorize="isAuthenticated()">
+                <a href="/cart" class="nav-link cart-link">
+                    <i class="fas fa-shopping-cart"></i> Carrito
+                </a>
+                <a href="/orders" class="nav-link"><i class="fas fa-box"></i> Pedidos</a>
+                <div class="dropdown">
+                    <button class="nav-link dropdown-toggle">
+                        <i class="fas fa-user-circle"></i>
+                        <span sec:authentication="name">Usuario</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <a href="/profile" class="dropdown-item"><i class="fas fa-user"></i> Mi Perfil</a>
+                        <a href="/sellers/dashboard" class="dropdown-item"><i class="fas fa-tachometer-alt"></i> Panel Vendedor</a>
+                        <a href="/logout" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+                    </div>
+                </div>
+            </div>
+
+            <div sec:authorize="isAnonymous()">
+                <a href="/login" class="btn btn-outline">Iniciar Sesión</a>
+                <a href="/register" class="btn btn-primary">Registrarse</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero / Banner -->
+<section class="hero">
+    <div class="hero-content">
+        <h1>Bienvenido a <span>E-Poli</span></h1>
+        <p>Descubre miles de productos de los mejores vendedores. Compra fácil, seguro y rápido.</p>
+        <div class="hero-actions">
+            <a href="/products" class="btn btn-primary btn-lg"><i class="fas fa-shopping-bag"></i> Explorar Productos</a>
+            <a href="/sellers/become-seller" class="btn btn-outline btn-lg" sec:authorize="isAuthenticated()"><i class="fas fa-store"></i> Vender Aquí</a>
+            <a href="/register" class="btn btn-outline btn-lg" sec:authorize="isAnonymous()"><i class="fas fa-store"></i> Empieza a Vender</a>
+        </div>
+    </div>
+    <div class="hero-stats">
+        <div class="stat">
+            <i class="fas fa-box"></i>
+            <span class="stat-number">1000+</span>
+            <span class="stat-label">Productos</span>
+        </div>
+        <div class="stat">
+            <i class="fas fa-store"></i>
+            <span class="stat-number">50+</span>
+            <span class="stat-label">Vendedores</span>
+        </div>
+        <div class="stat">
+            <i class="fas fa-users"></i>
+            <span class="stat-number">5000+</span>
+            <span class="stat-label">Compradores</span>
+        </div>
+    </div>
+</section>
+
+<!-- Categories -->
+<section class="categories-section">
+    <div class="container">
+        <h2 class="section-title">Categorías Populares</h2>
+        <div class="categories-grid">
+            <a th:each="cat : ${categories}" th:href="@{/products(category=${cat})}" class="category-card">
+                <i class="fas fa-tag category-icon"></i>
+                <span th:text="${cat}">Categoría</span>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Flash messages -->
+<div th:if="${success}" class="alert alert-success container">
+    <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+</div>
+<div th:if="${error}" class="alert alert-error container">
+    <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+</div>
+
+<!-- Featured Products (Carousel) -->
+<section class="featured-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title"><i class="fas fa-star"></i> Productos Destacados</h2>
+            <a href="/products" class="view-all">Ver todos <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="products-carousel">
+            <div class="products-grid" th:if="${!#lists.isEmpty(featuredProducts)}">
+                <div class="product-card" th:each="product : ${featuredProducts}">
+                    <div class="product-badge">Destacado</div>
+                    <a th:href="@{/products/{id}(id=${product.id})}">
+                        <img th:src="${product.imageUrl}" th:alt="${product.name}" class="product-image">
+                    </a>
+                    <div class="product-info">
+                        <span class="product-category" th:text="${product.category}">Categoría</span>
+                        <h3 class="product-name">
+                            <a th:href="@{/products/{id}(id=${product.id})}" th:text="${product.name}">Nombre del producto</a>
+                        </h3>
+                        <div class="product-seller">
+                            <i class="fas fa-store"></i>
+                            <a th:href="@{/sellers/{id}(id=${product.seller.id})}" th:text="${product.seller.storeName}">Tienda</a>
+                        </div>
+                        <div class="product-rating">
+                            <i class="fas fa-star"></i>
+                            <span th:text="${product.rating}">4.5</span>
+                            <span class="review-count" th:text="'(' + ${product.reviewCount} + ')'"></span>
+                        </div>
+                        <div class="product-footer">
+                            <span class="product-price" th:text="'$' + ${#numbers.formatDecimal(product.price, 1, 2)}">$0.00</span>
+                            <form th:action="@{/cart/add}" method="post" sec:authorize="isAuthenticated()">
+                                <input type="hidden" name="productId" th:value="${product.id}">
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="btn-add-cart" title="Agregar al carrito">
+                                    <i class="fas fa-cart-plus"></i>
+                                </button>
+                            </form>
+                            <a th:href="@{/login}" class="btn-add-cart" sec:authorize="isAnonymous()" title="Inicia sesión para comprar">
+                                <i class="fas fa-cart-plus"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${#lists.isEmpty(featuredProducts)}" class="empty-state">
+                <i class="fas fa-star"></i>
+                <p>No hay productos destacados aún.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Recent Products -->
+<section class="products-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title"><i class="fas fa-clock"></i> Productos Recientes</h2>
+            <a href="/products" class="view-all">Ver todos <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="products-grid" th:if="${!#lists.isEmpty(recentProducts)}">
+            <div class="product-card" th:each="product, iterStat : ${recentProducts}" th:if="${iterStat.index < 8}">
+                <a th:href="@{/products/{id}(id=${product.id})}">
+                    <img th:src="${product.imageUrl}" th:alt="${product.name}" class="product-image">
+                </a>
+                <div class="product-info">
+                    <span class="product-category" th:text="${product.category}">Categoría</span>
+                    <h3 class="product-name">
+                        <a th:href="@{/products/{id}(id=${product.id})}" th:text="${product.name}">Nombre</a>
+                    </h3>
+                    <div class="product-seller">
+                        <i class="fas fa-store"></i>
+                        <a th:href="@{/sellers/{id}(id=${product.seller.id})}" th:text="${product.seller.storeName}">Tienda</a>
+                    </div>
+                    <div class="product-rating">
+                        <i class="fas fa-star"></i>
+                        <span th:text="${product.rating}">4.5</span>
+                        <span class="review-count" th:text="'(' + ${product.reviewCount} + ')'"></span>
+                    </div>
+                    <div class="product-footer">
+                        <span class="product-price" th:text="'$' + ${#numbers.formatDecimal(product.price, 1, 2)}">$0.00</span>
+                        <form th:action="@{/cart/add}" method="post" sec:authorize="isAuthenticated()">
+                            <input type="hidden" name="productId" th:value="${product.id}">
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="btn-add-cart" title="Agregar al carrito">
+                                <i class="fas fa-cart-plus"></i>
+                            </button>
+                        </form>
+                        <a th:href="@{/login}" class="btn-add-cart" sec:authorize="isAnonymous()" title="Inicia sesión">
+                            <i class="fas fa-cart-plus"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div th:if="${#lists.isEmpty(recentProducts)}" class="empty-state">
+            <i class="fas fa-box-open"></i>
+            <p>No hay productos disponibles aún.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Popular Sellers -->
+<section class="sellers-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title"><i class="fas fa-store-alt"></i> Vendedores Populares</h2>
+            <a href="/sellers" class="view-all">Ver todos <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="sellers-grid" th:if="${!#lists.isEmpty(popularSellers)}">
+            <div class="seller-card" th:each="seller : ${popularSellers}">
+                <img th:src="${seller.logoUrl}" th:alt="${seller.storeName}" class="seller-logo">
+                <div class="seller-info">
+                    <h3 class="seller-name">
+                        <a th:href="@{/sellers/{id}(id=${seller.id})}" th:text="${seller.storeName}">Tienda</a>
+                    </h3>
+                    <div class="seller-rating">
+                        <i class="fas fa-star"></i>
+                        <span th:text="${seller.rating}">4.5</span>
+                    </div>
+                    <p class="seller-sales"><span th:text="${seller.totalSales}">0</span> ventas</p>
+                    <span th:if="${seller.verified}" class="verified-badge">
+                        <i class="fas fa-check-circle"></i> Verificado
+                    </span>
+                    <a th:href="@{/sellers/{id}(id=${seller.id})}" class="btn btn-outline btn-sm">Ver Tienda</a>
+                </div>
+            </div>
+        </div>
+        <div th:if="${#lists.isEmpty(popularSellers)}" class="empty-state">
+            <i class="fas fa-store"></i>
+            <p>No hay vendedores registrados aún.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content">
+            <h2>¿Quieres vender en E-Poli?</h2>
+            <p>Únete a nuestra comunidad de vendedores y llega a miles de compradores.</p>
+            <a href="/register" class="btn btn-primary btn-lg" sec:authorize="isAnonymous()">
+                <i class="fas fa-rocket"></i> Empieza Gratis
+            </a>
+            <a href="/sellers/become-seller" class="btn btn-primary btn-lg" sec:authorize="isAuthenticated()">
+                <i class="fas fa-rocket"></i> Crear Mi Tienda
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h4><i class="fas fa-store"></i> E-Poli</h4>
+                <p>Tu plataforma de confianza para comprar y vender productos de calidad.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Comprar</h4>
+                <ul>
+                    <li><a href="/products">Todos los Productos</a></li>
+                    <li><a href="/sellers">Tiendas</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Vender</h4>
+                <ul>
+                    <li><a href="/sellers/become-seller">Crear Tienda</a></li>
+                    <li><a href="/sellers/dashboard">Panel Vendedor</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Mi Cuenta</h4>
+                <ul>
+                    <li><a href="/login" sec:authorize="isAnonymous()">Iniciar Sesión</a></li>
+                    <li><a href="/register" sec:authorize="isAnonymous()">Registrarse</a></li>
+                    <li><a href="/profile" sec:authorize="isAuthenticated()">Mi Perfil</a></li>
+                    <li><a href="/orders" sec:authorize="isAuthenticated()">Mis Pedidos</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 E-Poli. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</footer>
+
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

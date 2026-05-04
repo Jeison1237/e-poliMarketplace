@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${product != null ? product.name + ' - E-Poli' : 'Producto - E-Poli'}">Producto</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="/" class="nav-logo"><i class="fas fa-store"></i> E-Poli</a>
+        <form class="nav-search" th:action="@{/products}" method="get">
+            <input type="text" name="keyword" placeholder="Buscar productos..." class="search-input">
+            <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
+        </form>
+        <div class="nav-actions">
+            <a href="/products" class="nav-link"><i class="fas fa-th-large"></i> Productos</a>
+            <div sec:authorize="isAuthenticated()">
+                <a href="/cart" class="nav-link cart-link"><i class="fas fa-shopping-cart"></i> Carrito</a>
+                <a href="/logout" class="nav-link"><i class="fas fa-sign-out-alt"></i> Salir</a>
+            </div>
+            <div sec:authorize="isAnonymous()">
+                <a href="/login" class="btn btn-outline">Iniciar Sesión</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container" th:if="${product != null}">
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb">
+        <a href="/">Inicio</a> /
+        <a href="/products">Productos</a> /
+        <a th:href="@{/products(category=${product.category})}" th:text="${product.category}">Categoría</a> /
+        <span th:text="${product.name}">Producto</span>
+    </nav>
+
+    <!-- Product Detail -->
+    <div class="product-detail">
+        <div class="product-detail-image">
+            <img th:src="${product.imageUrl}" th:alt="${product.name}" class="detail-image">
+        </div>
+
+        <div class="product-detail-info">
+            <span class="product-category-tag" th:text="${product.category}">Categoría</span>
+            <h1 class="product-detail-name" th:text="${product.name}">Nombre del Producto</h1>
+
+            <div class="product-detail-rating">
+                <div class="stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                </div>
+                <span th:text="${product.rating}">4.5</span>
+                <span class="review-count" th:text="'(' + ${product.reviewCount} + ' reseñas)'"></span>
+            </div>
+
+            <div class="product-detail-price">
+                <span class="price-label">Precio:</span>
+                <span class="price-value" th:text="'$' + ${#numbers.formatDecimal(product.price, 1, 2)}">$0.00</span>
+            </div>
+
+            <div class="product-detail-stock" th:if="${product.stock > 0}">
+                <i class="fas fa-check-circle"></i>
+                <span>En stock (<span th:text="${product.stock}">0</span> disponibles)</span>
+            </div>
+            <div class="product-detail-stock out-of-stock" th:if="${product.stock == 0}">
+                <i class="fas fa-times-circle"></i>
+                <span>Sin stock</span>
+            </div>
+
+            <div class="product-detail-seller">
+                <img th:src="${product.seller.logoUrl}" th:alt="${product.seller.storeName}" class="seller-mini-logo">
+                <div>
+                    <p>Vendido por</p>
+                    <a th:href="@{/sellers/{id}(id=${product.seller.id})}" th:text="${product.seller.storeName}" class="seller-link">Tienda</a>
+                    <span th:if="${product.seller.verified}" class="verified-badge-sm">
+                        <i class="fas fa-check-circle"></i> Verificado
+                    </span>
+                </div>
+            </div>
+
+            <div class="product-description">
+                <h3>Descripción</h3>
+                <p th:text="${product.description}">Descripción del producto...</p>
+            </div>
+
+            <!-- Add to Cart -->
+            <div class="add-to-cart-section" sec:authorize="isAuthenticated()" th:if="${product.stock > 0}">
+                <form th:action="@{/cart/add}" method="post" class="add-to-cart-form">
+                    <input type="hidden" name="productId" th:value="${product.id}">
+                    <div class="quantity-selector">
+                        <label>Cantidad:</label>
+                        <button type="button" onclick="decrementQty()" class="qty-btn">-</button>
+                        <input type="number" name="quantity" id="quantity" value="1" min="1" th:max="${product.stock}" class="qty-input">
+                        <button type="button" onclick="incrementQty()" class="qty-btn">+</button>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg btn-block">
+                        <i class="fas fa-shopping-cart"></i> Agregar al Carrito
+                    </button>
+                </form>
+            </div>
+
+            <div class="add-to-cart-section" sec:authorize="isAnonymous()">
+                <a href="/login" class="btn btn-primary btn-lg btn-block">
+                    <i class="fas fa-sign-in-alt"></i> Inicia sesión para comprar
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Products -->
+    <div th:if="${!#lists.isEmpty(sellerProducts)}" class="related-products">
+        <h2>Más productos de <span th:text="${product.seller.storeName}">Tienda</span></h2>
+        <div class="products-grid">
+            <div class="product-card" th:each="related : ${sellerProducts}">
+                <a th:href="@{/products/{id}(id=${related.id})}">
+                    <img th:src="${related.imageUrl}" th:alt="${related.name}" class="product-image">
+                </a>
+                <div class="product-info">
+                    <span class="product-category" th:text="${related.category}">Categoría</span>
+                    <h3 class="product-name">
+                        <a th:href="@{/products/{id}(id=${related.id})}" th:text="${related.name}">Nombre</a>
+                    </h3>
+                    <div class="product-footer">
+                        <span class="product-price" th:text="'$' + ${#numbers.formatDecimal(related.price, 1, 2)}">$0.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container" th:if="${product == null}">
+    <div class="empty-state">
+        <i class="fas fa-box-open"></i>
+        <h2>Producto no encontrado</h2>
+        <a href="/products" class="btn btn-primary">Ver Productos</a>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-bottom">
+            <p>&copy; 2024 E-Poli. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</footer>
+
+<script th:src="@{/js/main.js}"></script>
+<script>
+function decrementQty() {
+    const input = document.getElementById('quantity');
+    if (parseInt(input.value) > 1) input.value = parseInt(input.value) - 1;
+}
+function incrementQty() {
+    const input = document.getElementById('quantity');
+    const max = parseInt(input.getAttribute('max'));
+    if (parseInt(input.value) < max) input.value = parseInt(input.value) + 1;
+}
+</script>
+</body>
+</html>

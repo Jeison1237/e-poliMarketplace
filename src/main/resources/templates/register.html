@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrarse - E-Poli</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="auth-page">
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <a href="/" class="auth-logo"><i class="fas fa-store"></i> E-Poli</a>
+            <h2>Crear Cuenta</h2>
+            <p>Únete a nuestra comunidad</p>
+        </div>
+
+        <div th:if="${error}" class="alert alert-error">
+            <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+        </div>
+
+        <form th:action="@{/register}" method="post" th:object="${user}" class="auth-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="firstName"><i class="fas fa-user"></i> Nombre</label>
+                    <input type="text" id="firstName" th:field="*{firstName}" placeholder="Nombre"
+                           class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="lastName"><i class="fas fa-user"></i> Apellido</label>
+                    <input type="text" id="lastName" th:field="*{lastName}" placeholder="Apellido"
+                           class="form-control" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="username"><i class="fas fa-at"></i> Usuario</label>
+                <input type="text" id="username" th:field="*{username}" placeholder="Nombre de usuario único"
+                       class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="email"><i class="fas fa-envelope"></i> Email</label>
+                <input type="email" id="email" th:field="*{email}" placeholder="tu@email.com"
+                       class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="password"><i class="fas fa-lock"></i> Contraseña</label>
+                <input type="password" id="password" th:field="*{password}" placeholder="Mínimo 6 caracteres"
+                       class="form-control" required minlength="6">
+            </div>
+            <div class="form-group">
+                <label for="phone"><i class="fas fa-phone"></i> Teléfono (opcional)</label>
+                <input type="tel" id="phone" th:field="*{phone}" placeholder="+52 555 000 0000"
+                       class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg btn-block">
+                <i class="fas fa-user-plus"></i> Crear Cuenta
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            <p>¿Ya tienes cuenta? <a href="/login">Inicia sesión</a></p>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

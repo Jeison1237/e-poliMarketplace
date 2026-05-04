@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Pedidos - E-Poli</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="/" class="nav-logo"><i class="fas fa-store"></i> E-Poli</a>
+        <form class="nav-search" th:action="@{/products}" method="get">
+            <input type="text" name="keyword" placeholder="Buscar productos..." class="search-input">
+            <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
+        </form>
+        <div class="nav-actions">
+            <a href="/products" class="nav-link"><i class="fas fa-th-large"></i> Productos</a>
+            <a href="/cart" class="nav-link"><i class="fas fa-shopping-cart"></i> Carrito</a>
+            <a href="/orders" class="nav-link active"><i class="fas fa-box"></i> Pedidos</a>
+            <a href="/profile" class="nav-link"><i class="fas fa-user-circle"></i></a>
+            <a href="/logout" class="nav-link"><i class="fas fa-sign-out-alt"></i></a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="page-header">
+        <h1><i class="fas fa-box"></i> Mis Pedidos</h1>
+    </div>
+
+    <!-- Flash messages -->
+    <div th:if="${success}" class="alert alert-success">
+        <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+    </div>
+
+    <div th:if="${!#lists.isEmpty(orders)}" class="orders-list">
+        <div class="order-card" th:each="order : ${orders}">
+            <div class="order-header">
+                <div class="order-meta">
+                    <span class="order-id">Pedido #<span th:text="${order.id}">0</span></span>
+                    <span class="order-date">
+                        <i class="fas fa-calendar"></i>
+                        <span th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}">Fecha</span>
+                    </span>
+                </div>
+                <span class="order-status" th:classappend="${'status-' + order.status.name().toLowerCase()}"
+                      th:text="${order.status}">PENDING</span>
+            </div>
+
+            <div class="order-items-preview">
+                <div class="order-item-row" th:each="item : ${order.items}">
+                    <img th:src="${item.product.imageUrl}" th:alt="${item.product.name}" class="order-item-img">
+                    <div class="order-item-name">
+                        <span th:text="${item.product.name}">Producto</span>
+                        <small>x<span th:text="${item.quantity}">1</span></small>
+                    </div>
+                    <span class="order-item-price" th:text="'$' + ${#numbers.formatDecimal(item.unitPrice * item.quantity, 1, 2)}">$0.00</span>
+                </div>
+            </div>
+
+            <div class="order-footer">
+                <div class="order-address">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span th:text="${order.shippingAddress}">Dirección</span>
+                </div>
+                <div class="order-total">
+                    <span>Total:</span>
+                    <strong th:text="'$' + ${#numbers.formatDecimal(order.totalAmount, 1, 2)}">$0.00</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${#lists.isEmpty(orders)}" class="empty-state">
+        <i class="fas fa-box-open"></i>
+        <h2>No tienes pedidos aún</h2>
+        <p>¡Explora nuestros productos y realiza tu primer pedido!</p>
+        <a href="/products" class="btn btn-primary">
+            <i class="fas fa-shopping-bag"></i> Explorar Productos
+        </a>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-bottom">
+            <p>&copy; 2024 E-Poli. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</footer>
+
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

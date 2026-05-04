@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Tienda - E-Poli</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="/" class="nav-logo"><i class="fas fa-store"></i> E-Poli</a>
+        <div class="nav-actions">
+            <a href="/" class="nav-link"><i class="fas fa-home"></i> Inicio</a>
+            <a href="/logout" class="nav-link"><i class="fas fa-sign-out-alt"></i> Salir</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="page-header">
+        <h1><i class="fas fa-store"></i> Crear Mi Tienda</h1>
+        <p>Llena la información de tu tienda para empezar a vender</p>
+    </div>
+
+    <div class="auth-card" style="max-width: 600px; margin: 0 auto;">
+        <form th:action="@{/sellers/become-seller}" method="post" th:object="${seller}" class="auth-form">
+            <div class="form-group">
+                <label for="storeName"><i class="fas fa-store"></i> Nombre de la Tienda</label>
+                <input type="text" id="storeName" th:field="*{storeName}" class="form-control"
+                       placeholder="Ej: Mi Tienda Online" required>
+            </div>
+            <div class="form-group">
+                <label for="description"><i class="fas fa-align-left"></i> Descripción</label>
+                <textarea id="description" th:field="*{description}" class="form-control" rows="4"
+                          placeholder="Describe tu tienda, qué vendes, políticas de envío..."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="logoUrl"><i class="fas fa-image"></i> URL del Logo (opcional)</label>
+                <input type="url" id="logoUrl" th:field="*{logoUrl}" class="form-control"
+                       placeholder="https://ejemplo.com/logo.png">
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg btn-block">
+                <i class="fas fa-rocket"></i> Crear Mi Tienda
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-bottom">
+            <p>&copy; 2024 E-Poli. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</footer>
+
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

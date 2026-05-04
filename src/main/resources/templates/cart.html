@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Carrito - E-Poli</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="/" class="nav-logo"><i class="fas fa-store"></i> E-Poli</a>
+        <form class="nav-search" th:action="@{/products}" method="get">
+            <input type="text" name="keyword" placeholder="Buscar productos..." class="search-input">
+            <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
+        </form>
+        <div class="nav-actions">
+            <a href="/products" class="nav-link"><i class="fas fa-th-large"></i> Productos</a>
+            <a href="/cart" class="nav-link active"><i class="fas fa-shopping-cart"></i> Carrito</a>
+            <a href="/orders" class="nav-link"><i class="fas fa-box"></i> Pedidos</a>
+            <a href="/profile" class="nav-link"><i class="fas fa-user-circle"></i> Perfil</a>
+            <a href="/logout" class="nav-link"><i class="fas fa-sign-out-alt"></i></a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="page-header">
+        <h1><i class="fas fa-shopping-cart"></i> Mi Carrito</h1>
+        <a href="/products" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Seguir Comprando</a>
+    </div>
+
+    <!-- Flash messages -->
+    <div th:if="${success}" class="alert alert-success">
+        <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+    </div>
+    <div th:if="${error}" class="alert alert-error">
+        <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+    </div>
+
+    <div th:if="${cart != null && !#lists.isEmpty(cart.items)}" class="cart-layout">
+        <!-- Cart Items -->
+        <div class="cart-items-section">
+            <div class="cart-item" th:each="item : ${cart.items}">
+                <img th:src="${item.product.imageUrl}" th:alt="${item.product.name}" class="cart-item-image">
+                <div class="cart-item-details">
+                    <h3>
+                        <a th:href="@{/products/{id}(id=${item.product.id})}" th:text="${item.product.name}">Producto</a>
+                    </h3>
+                    <p class="cart-item-seller">
+                        <i class="fas fa-store"></i>
+                        <a th:href="@{/sellers/{id}(id=${item.product.seller.id})}" th:text="${item.product.seller.storeName}">Tienda</a>
+                    </p>
+                    <p class="cart-item-price" th:text="'$' + ${#numbers.formatDecimal(item.product.price, 1, 2)}">$0.00</p>
+                </div>
+                <div class="cart-item-controls">
+                    <form th:action="@{/cart/update}" method="post" class="qty-form">
+                        <input type="hidden" name="productId" th:value="${item.product.id}">
+                        <div class="quantity-control">
+                            <button type="button" class="qty-btn" onclick="this.form.quantity.value=Math.max(1,parseInt(this.form.quantity.value)-1)">-</button>
+                            <input type="number" name="quantity" th:value="${item.quantity}" min="1" class="qty-input">
+                            <button type="button" class="qty-btn" onclick="this.form.quantity.value=parseInt(this.form.quantity.value)+1">+</button>
+                        </div>
+                        <button type="submit" class="btn btn-outline btn-sm">Actualizar</button>
+                    </form>
+                    <form th:action="@{/cart/remove}" method="post">
+                        <input type="hidden" name="productId" th:value="${item.product.id}">
+                        <button type="submit" class="btn-remove"><i class="fas fa-trash-alt"></i></button>
+                    </form>
+                </div>
+                <div class="cart-item-subtotal">
+                    <span class="subtotal-label">Subtotal</span>
+                    <span class="subtotal-value" th:text="'$' + ${#numbers.formatDecimal(item.product.price * item.quantity, 1, 2)}">$0.00</span>
+                </div>
+            </div>
+            <div class="cart-actions">
+                <form th:action="@{/cart/clear}" method="post">
+                    <button type="submit" class="btn btn-outline">
+                        <i class="fas fa-trash"></i> Vaciar Carrito
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="order-summary">
+            <h2>Resumen del Pedido</h2>
+            <div class="summary-row">
+                <span>Subtotal (<span th:text="${#lists.size(cart.items)}">0</span> artículos)</span>
+                <span th:text="'$' + ${#numbers.formatDecimal(cart.total, 1, 2)}">$0.00</span>
+            </div>
+            <div class="summary-row">
+                <span>Envío</span>
+                <span class="free-shipping">Gratis</span>
+            </div>
+            <div class="summary-total">
+                <span>Total</span>
+                <span th:text="'$' + ${#numbers.formatDecimal(cart.total, 1, 2)}">$0.00</span>
+            </div>
+
+            <!-- Checkout Form -->
+            <form th:action="@{/orders/checkout}" method="post" class="checkout-form">
+                <div class="form-group">
+                    <label for="shippingAddress"><i class="fas fa-map-marker-alt"></i> Dirección de Envío</label>
+                    <textarea id="shippingAddress" name="shippingAddress" rows="3"
+                              placeholder="Ingresa tu dirección de entrega completa"
+                              class="form-control" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg btn-block">
+                    <i class="fas fa-lock"></i> Confirmar Pedido
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Empty Cart -->
+    <div th:if="${cart == null || #lists.isEmpty(cart.items)}" class="empty-cart">
+        <i class="fas fa-shopping-cart empty-cart-icon"></i>
+        <h2>Tu carrito está vacío</h2>
+        <p>¡Agrega productos para comenzar tu compra!</p>
+        <a href="/products" class="btn btn-primary btn-lg">
+            <i class="fas fa-shopping-bag"></i> Explorar Productos
+        </a>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-bottom">
+            <p>&copy; 2024 E-Poli. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</footer>
+
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

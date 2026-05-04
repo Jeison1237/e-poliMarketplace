@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiendas - E-Poli</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="/" class="nav-logo"><i class="fas fa-store"></i> E-Poli</a>
+        <form class="nav-search" th:action="@{/products}" method="get">
+            <input type="text" name="keyword" placeholder="Buscar productos..." class="search-input">
+            <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
+        </form>
+        <div class="nav-actions">
+            <a href="/products" class="nav-link"><i class="fas fa-th-large"></i> Productos</a>
+            <a href="/sellers" class="nav-link active"><i class="fas fa-store-alt"></i> Tiendas</a>
+            <div sec:authorize="isAuthenticated()">
+                <a href="/cart" class="nav-link"><i class="fas fa-shopping-cart"></i></a>
+                <a href="/logout" class="nav-link"><i class="fas fa-sign-out-alt"></i></a>
+            </div>
+            <div sec:authorize="isAnonymous()">
+                <a href="/login" class="btn btn-outline">Iniciar Sesión</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="page-header">
+        <h1><i class="fas fa-store-alt"></i> Todas las Tiendas</h1>
+    </div>
+
+    <div class="sellers-grid-full" th:if="${!#lists.isEmpty(sellers)}">
+        <div class="seller-card-full" th:each="seller : ${sellers}">
+            <img th:src="${seller.logoUrl}" th:alt="${seller.storeName}" class="seller-logo">
+            <div class="seller-info">
+                <div>
+                    <h3 class="seller-name" th:text="${seller.storeName}">Tienda</h3>
+                    <p th:text="${#strings.abbreviate(seller.description, 120)}">Descripción...</p>
+                </div>
+                <div class="seller-stats">
+                    <span><i class="fas fa-star"></i> <span th:text="${seller.rating}">4.5</span></span>
+                    <span><i class="fas fa-shopping-bag"></i> <span th:text="${seller.totalSales}">0</span> ventas</span>
+                    <span th:if="${seller.verified}" class="verified-badge">
+                        <i class="fas fa-check-circle"></i> Verificado
+                    </span>
+                </div>
+                <a th:href="@{/sellers/{id}(id=${seller.id})}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-arrow-right"></i> Ver Tienda
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${#lists.isEmpty(sellers)}" class="empty-state">
+        <i class="fas fa-store"></i>
+        <h2>No hay tiendas registradas aún</h2>
+        <a href="/sellers/become-seller" class="btn btn-primary" sec:authorize="isAuthenticated()">
+            <i class="fas fa-plus"></i> Crear Primera Tienda
+        </a>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-bottom">
+            <p>&copy; 2024 E-Poli. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</footer>
+
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

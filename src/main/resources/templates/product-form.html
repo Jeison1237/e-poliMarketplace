@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${product != null && product.id != null ? 'Editar Producto' : 'Nuevo Producto'} + ' - E-Poli'">Producto</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="/" class="nav-logo"><i class="fas fa-store"></i> E-Poli</a>
+        <div class="nav-actions">
+            <a href="/sellers/dashboard" class="nav-link"><i class="fas fa-tachometer-alt"></i> Mi Panel</a>
+            <a href="/logout" class="nav-link"><i class="fas fa-sign-out-alt"></i> Salir</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="page-header">
+        <h1 th:text="${product != null && product.id != null ? 'Editar Producto' : 'Nuevo Producto'}">
+            <i class="fas fa-box"></i> Producto
+        </h1>
+        <a href="/sellers/dashboard" class="btn btn-outline">
+            <i class="fas fa-arrow-left"></i> Volver al Panel
+        </a>
+    </div>
+
+    <div class="auth-card" style="max-width: 700px; margin: 0 auto;">
+        <form th:action="${product != null && product.id != null ? '/products/' + product.id + '/edit' : '/products/new'}"
+              method="post" th:object="${product}" class="auth-form">
+
+            <div class="form-group">
+                <label for="name"><i class="fas fa-tag"></i> Nombre del Producto</label>
+                <input type="text" id="name" th:field="*{name}" class="form-control"
+                       placeholder="Nombre descriptivo del producto" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description"><i class="fas fa-align-left"></i> Descripción</label>
+                <textarea id="description" th:field="*{description}" class="form-control" rows="4"
+                          placeholder="Descripción detallada del producto, características, usos..."></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="price"><i class="fas fa-dollar-sign"></i> Precio</label>
+                    <input type="number" id="price" th:field="*{price}" class="form-control"
+                           min="0" step="0.01" placeholder="0.00" required>
+                </div>
+                <div class="form-group">
+                    <label for="stock"><i class="fas fa-cubes"></i> Stock</label>
+                    <input type="number" id="stock" th:field="*{stock}" class="form-control"
+                           min="0" placeholder="0" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="category"><i class="fas fa-folder"></i> Categoría</label>
+                <input type="text" id="category" th:field="*{category}" class="form-control"
+                       placeholder="Ej: Tecnología, Moda, Hogar..." list="categorySuggestions">
+                <datalist id="categorySuggestions">
+                    <option value="Tecnología">
+                    <option value="Moda">
+                    <option value="Hogar">
+                    <option value="Deportes">
+                    <option value="Juguetes">
+                    <option value="Libros">
+                    <option value="Salud y Belleza">
+                    <option value="Alimentos">
+                </datalist>
+            </div>
+
+            <div class="form-group">
+                <label for="imageUrl"><i class="fas fa-image"></i> URL de Imagen</label>
+                <input type="url" id="imageUrl" th:field="*{imageUrl}" class="form-control"
+                       placeholder="https://ejemplo.com/imagen.jpg">
+            </div>
+
+            <div class="form-group checkbox-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" th:field="*{featured}">
+                    <span><i class="fas fa-star"></i> Marcar como Destacado</span>
+                </label>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-save"></i>
+                    <span th:text="${product != null && product.id != null ? 'Guardar Cambios' : 'Crear Producto'}">Guardar</span>
+                </button>
+                <a href="/sellers/dashboard" class="btn btn-outline btn-lg">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-bottom">
+            <p>&copy; 2024 E-Poli. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</footer>
+
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
