@@ -44,6 +44,9 @@ public class SellerController {
 
     @GetMapping("/dashboard")
     public String sellerDashboard(Authentication authentication, Model model) {
+        if (authentication == null) {
+            return "redirect:/login";
+        }
         userService.findByUsername(authentication.getName()).ifPresent(user -> {
             sellerService.findByUser(user).ifPresent(seller -> {
                 model.addAttribute("seller", seller);
@@ -64,6 +67,9 @@ public class SellerController {
     public String becomeSeller(@ModelAttribute Seller seller,
                                Authentication authentication,
                                RedirectAttributes redirectAttributes) {
+        if (authentication == null) {
+            return "redirect:/login";
+        }
         userService.findByUsername(authentication.getName()).ifPresent(user -> {
             seller.setUser(user);
             user.setRole(com.marketplace.model.User.Role.SELLER);

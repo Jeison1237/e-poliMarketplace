@@ -54,8 +54,8 @@ public class ImageService {
         
         Files.write(filePath, file.getBytes());
 
-        // Return relative path for storage in database
-        return "uploads/products/" + uniqueFilename;
+        // Return absolute path (starting with /) for correct URL resolution in HTML
+        return "/uploads/products/" + uniqueFilename;
     }
 
     public void deleteImage(String imagePath) {
@@ -64,7 +64,9 @@ public class ImageService {
         }
 
         try {
-            Path filePath = Paths.get(imagePath).normalize();
+            // Normalize path and remove leading slash if present
+            String normalizedPath = imagePath.startsWith("/") ? imagePath.substring(1) : imagePath;
+            Path filePath = Paths.get(normalizedPath).normalize();
             Path uploadPath = Paths.get(uploadDir).toAbsolutePath();
             
             // Verify the path is within the upload directory

@@ -234,7 +234,7 @@ ul { list-style: none; }
 
 .btn-lg { padding: 0.8rem 2rem; font-size: 1rem; border-radius: var(--radius); }
 .btn-sm { padding: 0.35rem 0.75rem; font-size: 0.8rem; }
-.btn-block { width: 100%; justify-content: center; }
+.btn-block { display: flex; width: 100%; justify-content: center; }
 
 /* ============================
    HERO SECTION

@@ -22,6 +22,9 @@ public class OrderController {
 
     @GetMapping
     public String orderHistory(Authentication authentication, Model model) {
+        if (authentication == null) {
+            return "redirect:/login";
+        }
         userService.findByUsername(authentication.getName()).ifPresent(user -> {
             model.addAttribute("orders", orderService.findByUser(user));
             model.addAttribute("user", user);
@@ -39,6 +42,9 @@ public class OrderController {
     public String checkout(@RequestParam String shippingAddress,
                            Authentication authentication,
                            RedirectAttributes redirectAttributes) {
+        if (authentication == null) {
+            return "redirect:/login";
+        }
         try {
             userService.findByUsername(authentication.getName()).ifPresent(user -> {
                 Order order = orderService.createOrderFromCart(user, shippingAddress);

@@ -22,6 +22,9 @@ public class CartController {
 
     @GetMapping
     public String viewCart(Authentication authentication, Model model) {
+        if (authentication == null) {
+            return "redirect:/login";
+        }
         userService.findByUsername(authentication.getName()).ifPresent(user -> {
             Cart cart = cartService.findByUser(user);
             model.addAttribute("cart", cart);
@@ -34,6 +37,9 @@ public class CartController {
                             @RequestParam(defaultValue = "1") int quantity,
                             Authentication authentication,
                             RedirectAttributes redirectAttributes) {
+        if (authentication == null) {
+            return "redirect:/login";
+        }
         userService.findByUsername(authentication.getName()).ifPresent(user ->
                 cartService.addItem(user, productId, quantity));
         redirectAttributes.addFlashAttribute("success", "Producto agregado al carrito.");
@@ -44,6 +50,9 @@ public class CartController {
     public String updateQuantity(@RequestParam Long productId,
                                  @RequestParam int quantity,
                                  Authentication authentication) {
+        if (authentication == null) {
+            return "redirect:/login";
+        }
         userService.findByUsername(authentication.getName()).ifPresent(user ->
                 cartService.updateItemQuantity(user, productId, quantity));
         return "redirect:/cart";
@@ -53,6 +62,9 @@ public class CartController {
     public String removeFromCart(@RequestParam Long productId,
                                  Authentication authentication,
                                  RedirectAttributes redirectAttributes) {
+        if (authentication == null) {
+            return "redirect:/login";
+        }
         userService.findByUsername(authentication.getName()).ifPresent(user ->
                 cartService.removeItem(user, productId));
         redirectAttributes.addFlashAttribute("success", "Producto eliminado del carrito.");
@@ -61,6 +73,9 @@ public class CartController {
 
     @PostMapping("/clear")
     public String clearCart(Authentication authentication) {
+        if (authentication == null) {
+            return "redirect:/login";
+        }
         userService.findByUsername(authentication.getName()).ifPresent(user ->
                 cartService.clearCart(user));
         return "redirect:/cart";
