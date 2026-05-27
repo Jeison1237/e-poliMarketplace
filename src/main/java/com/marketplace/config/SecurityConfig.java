@@ -43,7 +43,7 @@ public class SecurityConfig {
                 .requestMatchers("/sellers/dashboard", "/sellers/become-seller").authenticated()
                 .requestMatchers("/products/new", "/products/*/edit", "/products/*/delete").authenticated()
                 .requestMatchers("/", "/products", "/products/{id}", "/sellers", "/sellers/{id}", "/register", "/login",
-                        "/css/**", "/js/**", "/images/**", "/h2-console/**").permitAll()
+                        "/css/**", "/js/**", "/images/**", "/uploads/**", "/h2-console/**").permitAll()
                 .requestMatchers("/cart/**", "/orders/**", "/profile").authenticated()
                 .anyRequest().authenticated()
             )
