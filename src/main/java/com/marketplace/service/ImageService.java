@@ -36,7 +36,7 @@ public class ImageService {
         }
 
         // Create directory if it doesn't exist
-        Path uploadPath = Paths.get(uploadDir);
+        Path uploadPath = Paths.get(uploadDir).toAbsolutePath();
         Files.createDirectories(uploadPath);
 
         // Generate unique filename
@@ -44,8 +44,14 @@ public class ImageService {
         String fileExtension = getFileExtension(originalFilename);
         String uniqueFilename = UUID.randomUUID() + "." + fileExtension;
 
-        // Save file
-        Path filePath = uploadPath.resolve(uniqueFilename);
+        // Save file with path traversal prevention
+        Path filePath = uploadPath.resolve(uniqueFilename).normalize();
+        
+        // Verify the resolved path is within the upload directory
+        if (!filePath.startsWith(uploadPath)) {
+            throw new SecurityException("Invalid file path");
+        }
+        
         Files.write(filePath, file.getBytes());
 
         // Return relative path for storage in database
@@ -58,7 +64,14 @@ public class ImageService {
         }
 
         try {
-            Path filePath = Paths.get(imagePath);
+            Path filePath = Paths.get(imagePath).normalize();
+            Path uploadPath = Paths.get(uploadDir).toAbsolutePath();
+            
+            // Verify the path is within the upload directory
+            if (!filePath.toAbsolutePath().startsWith(uploadPath)) {
+                return; // Silently ignore attempts to delete files outside upload directory
+            }
+            
             Files.deleteIfExists(filePath);
         } catch (IOException e) {
             // Log but don't throw - image deletion failure shouldn't break product operations
@@ -82,6 +95,9 @@ public class ImageService {
         if (filename == null || !filename.contains(".")) {
             return "jpg";
         }
-        return filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
+        String extension = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
+        // Sanitize extension to only contain alphanumeric characters
+        extension = extension.replaceAll("[^a-z0-9]", "");
+        return extension.isEmpty() ? "jpg" : extension;
     }
 }
