@@ -95,7 +95,7 @@
 
                 <div id="existingImageContainer" th:if="${product != null && product.id != null && product.imageUrl != null}" style="margin-top: 15px;">
                     <p><strong>Imagen actual:</strong></p>
-                    <img th:src="@{${product.imageUrl}}" alt="Current Product Image" style="max-width: 200px; max-height: 200px; border-radius: 5px; border: 1px solid #ddd;">
+                    <img th:src="${product.imageUrl}" alt="Current Product Image" style="max-width: 200px; max-height: 200px; border-radius: 5px; border: 1px solid #ddd;">
                     <p class="form-text text-muted" style="margin-top: 10px;">Sube una nueva imagen para cambiar la actual</p>
                 </div>
             </div>
