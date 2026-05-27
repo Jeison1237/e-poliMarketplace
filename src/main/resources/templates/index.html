@@ -40,7 +40,9 @@
                     <div class="dropdown-menu">
                         <a href="/profile" class="dropdown-item"><i class="fas fa-user"></i> Mi Perfil</a>
                         <a href="/sellers/dashboard" class="dropdown-item"><i class="fas fa-tachometer-alt"></i> Panel Vendedor</a>
-                        <a href="/logout" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+                        <form th:action="@{/logout}" method="post" class="logout-form">
+                            <button type="submit" class="dropdown-item logout-button"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button>
+                        </form>
                     </div>
                 </div>
             </div>
