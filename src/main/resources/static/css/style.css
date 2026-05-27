@@ -1003,3 +1003,48 @@ textarea.form-control { resize: vertical; }
 .seller-card-full .seller-logo { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
 .seller-card-full .seller-info { flex: 1; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
 .seller-card-full h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 0.25rem; }
+
+/* ============================
+   IMAGE UPLOAD
+   ============================ */
+.image-upload-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.image-input {
+    padding: 0.75rem;
+    border: 2px dashed var(--primary-light);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.image-input:hover {
+    border-color: var(--primary);
+    background: var(--primary-light);
+}
+
+.image-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.image-preview-container {
+    padding: 1rem;
+    background: var(--gray-50);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--gray-200);
+}
+
+.image-preview-container img {
+    box-shadow: var(--shadow-sm);
+}
+
+.form-text {
+    display: block;
+    font-size: 0.85rem;
+    margin-top: 0.35rem;
+}
