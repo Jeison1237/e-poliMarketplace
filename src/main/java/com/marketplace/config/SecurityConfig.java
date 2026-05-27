@@ -40,9 +40,9 @@ public class SecurityConfig {
         http
             .authenticationProvider(authenticationProvider())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/products/**", "/sellers/**", "/register", "/login",
-                        "/css/**", "/js/**", "/images/**", "/h2-console/**").permitAll()
                 .requestMatchers("/sellers/dashboard", "/sellers/become-seller").authenticated()
+                .requestMatchers("/", "/products/**", "/sellers", "/sellers/{id}", "/register", "/login",
+                        "/css/**", "/js/**", "/images/**", "/h2-console/**").permitAll()
                 .requestMatchers("/cart/**", "/orders/**", "/profile").authenticated()
                 .anyRequest().authenticated()
             )
