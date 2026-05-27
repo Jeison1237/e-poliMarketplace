@@ -70,6 +70,9 @@ public class ProductController {
 
     @GetMapping("/new")
     public String newProductPage(Authentication authentication, Model model) {
+        if (authentication == null) {
+            return "redirect:/login";
+        }
         userService.findByUsername(authentication.getName()).ifPresent(user ->
                 sellerService.findByUser(user).ifPresent(seller ->
                         model.addAttribute("seller", seller)));
@@ -82,6 +85,9 @@ public class ProductController {
                                 @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
                                 Authentication authentication,
                                 RedirectAttributes redirectAttributes) {
+        if (authentication == null) {
+            return "redirect:/login";
+        }
         try {
             userService.findByUsername(authentication.getName()).ifPresent(user ->
                     sellerService.findByUser(user).ifPresent(seller -> {
@@ -112,6 +118,9 @@ public class ProductController {
 
     @GetMapping("/{id}/edit")
     public String editProductPage(@PathVariable Long id, Authentication authentication, Model model) {
+        if (authentication == null) {
+            return "redirect:/login";
+        }
         productService.findById(id).ifPresent(product -> model.addAttribute("product", product));
         return "product-form";
     }

@@ -40,6 +40,9 @@ public class UserController {
 
     @GetMapping("/profile")
     public String profile(Authentication authentication, Model model) {
+        if (authentication == null) {
+            return "redirect:/login";
+        }
         userService.findByUsername(authentication.getName())
                 .ifPresent(user -> model.addAttribute("user", user));
         return "profile";
@@ -49,6 +52,9 @@ public class UserController {
     public String updateProfile(@ModelAttribute User updatedUser,
                                 Authentication authentication,
                                 RedirectAttributes redirectAttributes) {
+        if (authentication == null) {
+            return "redirect:/login";
+        }
         userService.findByUsername(authentication.getName()).ifPresent(user -> {
             user.setFirstName(updatedUser.getFirstName());
             user.setLastName(updatedUser.getLastName());
