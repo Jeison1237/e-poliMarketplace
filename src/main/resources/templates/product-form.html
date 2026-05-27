@@ -15,7 +15,9 @@
         <a href="/" class="nav-logo"><i class="fas fa-store"></i> E-Poli</a>
         <div class="nav-actions">
             <a href="/sellers/dashboard" class="nav-link"><i class="fas fa-tachometer-alt"></i> Mi Panel</a>
-            <a href="/logout" class="nav-link"><i class="fas fa-sign-out-alt"></i> Salir</a>
+            <form th:action="@{/logout}" method="post" class="logout-form">
+                <button type="submit" class="nav-link logout-button"><i class="fas fa-sign-out-alt"></i> Salir</button>
+            </form>
         </div>
     </div>
 </nav>

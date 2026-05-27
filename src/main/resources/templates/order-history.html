@@ -23,7 +23,9 @@
             <a href="/cart" class="nav-link"><i class="fas fa-shopping-cart"></i> Carrito</a>
             <a href="/orders" class="nav-link active"><i class="fas fa-box"></i> Pedidos</a>
             <a href="/profile" class="nav-link"><i class="fas fa-user-circle"></i></a>
-            <a href="/logout" class="nav-link"><i class="fas fa-sign-out-alt"></i></a>
+            <form th:action="@{/logout}" method="post" class="logout-form">
+                <button type="submit" class="nav-link logout-button"><i class="fas fa-sign-out-alt"></i></button>
+            </form>
         </div>
     </div>
 </nav>

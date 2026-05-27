@@ -23,7 +23,9 @@
             <a href="/sellers" class="nav-link active"><i class="fas fa-store-alt"></i> Tiendas</a>
             <div sec:authorize="isAuthenticated()">
                 <a href="/cart" class="nav-link"><i class="fas fa-shopping-cart"></i></a>
-                <a href="/logout" class="nav-link"><i class="fas fa-sign-out-alt"></i></a>
+                <form th:action="@{/logout}" method="post" class="logout-form">
+                    <button type="submit" class="nav-link logout-button"><i class="fas fa-sign-out-alt"></i></button>
+                </form>
             </div>
             <div sec:authorize="isAnonymous()">
                 <a href="/login" class="btn btn-outline">Iniciar Sesión</a>

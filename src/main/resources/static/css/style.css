@@ -135,6 +135,22 @@ ul { list-style: none; }
 
 .nav-link:hover, .nav-link.active { background: var(--primary-light); color: var(--primary); }
 
+.logout-form {
+    display: inline-flex;
+    margin: 0;
+}
+
+.logout-button {
+    background: none;
+    border: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+}
+
+.dropdown-menu .logout-form { display: block; }
+.dropdown-menu .logout-button { width: 100%; text-align: left; }
+
 /* Dropdown */
 .dropdown { position: relative; }
 .dropdown-toggle {
