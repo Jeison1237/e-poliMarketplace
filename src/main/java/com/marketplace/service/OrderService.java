@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 @Service
 @Transactional
@@ -22,8 +21,6 @@ public class OrderService {
 
     @Autowired
     private CartService cartService;
-
-    private static final Pattern PAYPAL_EMAIL_PATTERN = Pattern.compile("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
 
     public Order createOrderFromCart(User user,
                                      String shippingAddress,
@@ -83,7 +80,7 @@ public class OrderService {
             if (email.isEmpty()) {
                 throw new RuntimeException("Ingresa tu correo de PayPal.");
             }
-            if (!PAYPAL_EMAIL_PATTERN.matcher(email).matches()) {
+            if (!isValidPaypalEmail(email)) {
                 throw new RuntimeException("El correo de PayPal no es válido.");
             }
             order.setPaypalEmail(email);
@@ -108,6 +105,18 @@ public class OrderService {
             throw new RuntimeException("El número de tarjeta debe contener solo dígitos.");
         }
         return raw;
+    }
+
+    private boolean isValidPaypalEmail(String email) {
+        if (email.contains(" ")) {
+            return false;
+        }
+        int atIndex = email.indexOf('@');
+        if (atIndex <= 0 || atIndex != email.lastIndexOf('@')) {
+            return false;
+        }
+        int dotIndex = email.indexOf('.', atIndex + 2);
+        return dotIndex > atIndex + 1 && dotIndex < email.length() - 1;
     }
 
     private String generatePaymentReference(Order.PaymentMethod paymentMethod) {
