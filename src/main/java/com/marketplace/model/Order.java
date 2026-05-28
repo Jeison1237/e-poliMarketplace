@@ -51,6 +51,12 @@ public class Order {
     @Column(length = 120)
     private String paymentReference;
 
+    @Column(length = 255)
+    private String stripePaymentIntentId;
+
+    @Column(length = 255)
+    private String stripeTransactionId;
+
     @Column(length = 120)
     private String paypalEmail;
 
