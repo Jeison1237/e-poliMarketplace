@@ -63,11 +63,10 @@
                     <form th:action="@{/cart/update}" method="post" class="qty-form">
                         <input type="hidden" name="productId" th:value="${item.product.id}">
                         <div class="quantity-control">
-                            <button type="button" class="qty-btn" onclick="this.form.quantity.value=Math.max(1,parseInt(this.form.quantity.value)-1)">-</button>
+                            <button type="button" class="qty-btn" onclick="decreaseQuantity(this)">-</button>
                             <input type="number" name="quantity" th:value="${item.quantity}" min="1" class="qty-input">
-                            <button type="button" class="qty-btn" onclick="this.form.quantity.value=parseInt(this.form.quantity.value)+1">+</button>
+                            <button type="button" class="qty-btn" onclick="increaseQuantity(this)">+</button>
                         </div>
-                        <button type="submit" class="btn btn-outline btn-sm">Actualizar</button>
                     </form>
                     <form th:action="@{/cart/remove}" method="post">
                         <input type="hidden" name="productId" th:value="${item.product.id}">

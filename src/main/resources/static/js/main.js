@@ -163,3 +163,26 @@ function incrementQty() {
         }
     }
 }
+
+// Cart quantity functions - auto-submit form
+function decreaseQuantity(button) {
+    const form = button.closest('form');
+    const input = form.querySelector('.qty-input');
+    const min = parseInt(input.min) || 1;
+    let val = parseInt(input.value) || 1;
+    if (val > min) {
+        input.value = val - 1;
+        form.submit();
+    }
+}
+
+function increaseQuantity(button) {
+    const form = button.closest('form');
+    const input = form.querySelector('.qty-input');
+    const max = parseInt(input.max) || 9999;
+    let val = parseInt(input.value) || 1;
+    if (val < max) {
+        input.value = val + 1;
+        form.submit();
+    }
+}
