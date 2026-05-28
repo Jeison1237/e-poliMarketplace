@@ -89,6 +89,17 @@
                 </div>
             </div>
 
+            <div class="add-to-cart-section">
+                <a th:if="${whatsappLink != null}"
+                   th:href="${whatsappLink}"
+                   class="btn btn-outline"
+                   target="_blank"
+                   rel="noopener">
+                    <i class="fab fa-whatsapp"></i> Escribir por WhatsApp
+                </a>
+                <span th:if="${whatsappLink == null}" class="badge badge-muted">WhatsApp no disponible</span>
+            </div>
+
             <div class="product-description">
                 <h3>Descripción</h3>
                 <p th:text="${product.description}">Descripción del producto...</p>

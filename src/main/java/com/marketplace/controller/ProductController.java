@@ -16,6 +16,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Controller
@@ -64,6 +66,9 @@ public class ProductController {
                             .filter(p -> !p.getId().equals(id))
                             .limit(4)
                             .toList());
+            String message = "Hola, me interesa el producto " + product.getName() + " de " + product.getSeller().getStoreName();
+            String whatsappLink = buildWhatsappLink(product.getSeller().getUser().getPhone(), message);
+            model.addAttribute("whatsappLink", whatsappLink);
         });
         return "product-detail";
     }
@@ -182,5 +187,19 @@ public class ProductController {
         productService.delete(id);
         redirectAttributes.addFlashAttribute("success", "Producto eliminado correctamente.");
         return "redirect:/sellers/dashboard";
+    }
+
+    private String buildWhatsappLink(String phone, String message) {
+        if (phone == null || phone.isBlank()) {
+            return null;
+        }
+        String normalized = phone.replaceAll("\\D", "");
+        if (normalized.isBlank()) {
+            return null;
+        }
+        if (message == null || message.isBlank()) {
+            return "https://wa.me/" + normalized;
+        }
+        return "https://wa.me/" + normalized + "?text=" + URLEncoder.encode(message, StandardCharsets.UTF_8);
     }
 }

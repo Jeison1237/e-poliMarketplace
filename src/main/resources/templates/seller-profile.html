@@ -59,6 +59,16 @@
                     </span>
                 </div>
                 <p th:text="${seller.description}" class="seller-description">Descripción de la tienda...</p>
+                <div class="form-actions">
+                    <a th:if="${whatsappLink != null}"
+                       th:href="${whatsappLink}"
+                       class="btn btn-outline"
+                       target="_blank"
+                       rel="noopener">
+                        <i class="fab fa-whatsapp"></i> Escribir por WhatsApp
+                    </a>
+                    <span th:if="${whatsappLink == null}" class="badge badge-muted">WhatsApp no disponible</span>
+                </div>
                 <p class="seller-since">
                     <i class="fas fa-calendar"></i> Miembro desde
                     <span th:text="${#temporals.format(seller.createdAt, 'MMMM yyyy')}">Enero 2024</span>

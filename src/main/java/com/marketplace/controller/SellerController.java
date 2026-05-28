@@ -15,6 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Controller
@@ -44,6 +46,9 @@ public class SellerController {
         sellerService.findById(id).ifPresent(seller -> {
             model.addAttribute("seller", seller);
             model.addAttribute("products", productService.findBySeller(seller));
+            String message = "Hola, quisiera información sobre tu tienda " + seller.getStoreName();
+            String whatsappLink = buildWhatsappLink(seller.getUser().getPhone(), message);
+            model.addAttribute("whatsappLink", whatsappLink);
         });
         return "seller-profile";
     }
@@ -104,5 +109,19 @@ public class SellerController {
             redirectAttributes.addFlashAttribute("error", "Error al crear la tienda: " + e.getMessage());
         }
         return "redirect:/sellers/dashboard";
+    }
+
+    private String buildWhatsappLink(String phone, String message) {
+        if (phone == null || phone.isBlank()) {
+            return null;
+        }
+        String normalized = phone.replaceAll("\\D", "");
+        if (normalized.isBlank()) {
+            return null;
+        }
+        if (message == null || message.isBlank()) {
+            return "https://wa.me/" + normalized;
+        }
+        return "https://wa.me/" + normalized + "?text=" + URLEncoder.encode(message, StandardCharsets.UTF_8);
     }
 }
