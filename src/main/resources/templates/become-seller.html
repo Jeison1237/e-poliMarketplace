@@ -29,7 +29,7 @@
     </div>
 
     <div class="auth-card" style="max-width: 600px; margin: 0 auto;">
-        <form th:action="@{/sellers/become-seller}" method="post" th:object="${seller}" class="auth-form">
+        <form th:action="@{/sellers/become-seller}" method="post" th:object="${seller}" class="auth-form" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="storeName"><i class="fas fa-store"></i> Nombre de la Tienda</label>
                 <input type="text" id="storeName" th:field="*{storeName}" class="form-control"
@@ -41,9 +41,20 @@
                           placeholder="Describe tu tienda, qué vendes, políticas de envío..."></textarea>
             </div>
             <div class="form-group">
-                <label for="logoUrl"><i class="fas fa-image"></i> URL del Logo (opcional)</label>
-                <input type="url" id="logoUrl" th:field="*{logoUrl}" class="form-control"
-                       placeholder="https://ejemplo.com/logo.png">
+                <label for="logoFile"><i class="fas fa-image"></i> Logo de la Tienda (opcional)</label>
+                <div class="image-upload-container">
+                    <input type="file" id="logoFile" name="logoFile" class="form-control image-input"
+                           accept="image/jpeg,image/png,image/gif,image/webp">
+                    <small class="form-text text-muted">Formatos permitidos: JPEG, PNG, GIF, WebP (máximo 5MB)</small>
+                </div>
+                
+                <div id="imagePreviewContainer" class="image-preview-container" style="display: none; margin-top: 15px;">
+                    <p><strong>Vista previa:</strong></p>
+                    <img id="imagePreview" src="" alt="Preview" style="max-width: 200px; max-height: 200px; border-radius: 5px; border: 1px solid #ddd;">
+                    <button type="button" class="btn btn-sm btn-outline" onclick="clearImageUpload()" style="margin-top: 10px;">
+                        <i class="fas fa-times"></i> Limpiar
+                    </button>
+                </div>
             </div>
             <button type="submit" class="btn btn-primary btn-lg btn-block">
                 <i class="fas fa-rocket"></i> Crear Mi Tienda
@@ -62,5 +73,42 @@
 </footer>
 
 <script th:src="@{/js/main.js}"></script>
+<script>
+    // Image preview functionality
+    document.getElementById('logoFile').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            // Validate file type
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                alert('Tipo de archivo no permitido. Solo se aceptan: JPEG, PNG, GIF, WebP');
+                e.target.value = '';
+                document.getElementById('imagePreviewContainer').style.display = 'none';
+                return;
+            }
+            
+            // Validate file size (5MB = 5242880 bytes)
+            if (file.size > 5242880) {
+                alert('El archivo es muy grande. El tamaño máximo es 5MB');
+                e.target.value = '';
+                document.getElementById('imagePreviewContainer').style.display = 'none';
+                return;
+            }
+            
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                document.getElementById('imagePreview').src = event.target.result;
+                document.getElementById('imagePreviewContainer').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    function clearImageUpload() {
+        document.getElementById('logoFile').value = '';
+        document.getElementById('imagePreviewContainer').style.display = 'none';
+    }
+</script>
 </body>
 </html>
