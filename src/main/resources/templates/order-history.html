@@ -75,6 +75,25 @@
                         <i class="fas fa-credit-card"></i>
                         <span th:text="${order.paymentPlan ?: 'Pago único'}">Pago único</span>
                     </div>
+                    <div class="order-info-row">
+                        <i class="fas fa-money-check-alt"></i>
+                        <span th:text="${order.paymentMethod == null ? 'No definido' : (order.paymentMethod.name() == 'PAYPAL' ? 'PayPal' : 'Tarjeta')}">PayPal</span>
+                        <span class="payment-status"
+                              th:classappend="${'payment-' + (order.paymentStatus != null ? order.paymentStatus.name().toLowerCase() : 'pending')}"
+                              th:text="${order.paymentStatus != null ? order.paymentStatus : 'PENDING'}">PENDING</span>
+                    </div>
+                    <div class="order-info-row" th:if="${order.paymentMethod != null && order.paymentMethod.name() == 'PAYPAL'}">
+                        <i class="fab fa-paypal"></i>
+                        <span th:text="${order.paypalEmail}">correo@paypal.com</span>
+                    </div>
+                    <div class="order-info-row" th:if="${order.paymentMethod != null && order.paymentMethod.name() == 'CARD'}">
+                        <i class="fas fa-credit-card"></i>
+                        <span th:text="${order.cardLast4 != null ? '**** ' + order.cardLast4 : 'Tarjeta'}">**** 1234</span>
+                    </div>
+                    <div class="order-info-row" th:if="${order.paymentReference != null}">
+                        <i class="fas fa-receipt"></i>
+                        <span th:text="'Ref: ' + ${order.paymentReference}">Ref</span>
+                    </div>
                 </div>
                 <div class="order-total">
                     <span>Total:</span>
