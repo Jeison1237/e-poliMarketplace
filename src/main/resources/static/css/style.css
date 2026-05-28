@@ -1623,4 +1623,53 @@ textarea.form-control { resize: vertical; }
     .stat-number {
         font-size: 1.3rem;
     }
+
+    .status-select {
+        font-size: 0.75rem;
+    }
+}
+
+/* Order Status Update Styles */
+.order-status-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--gray-200);
+}
+
+.status-select {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--primary);
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    background-color: white;
+    color: var(--gray-900);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.status-select:hover {
+    border-color: var(--primary-dark);
+    background-color: var(--primary-light);
+}
+
+.status-select:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.status-message {
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: none;
+}
+
+.status-message.success {
+    color: var(--success);
+}
+
+.status-message.error {
+    color: var(--danger);
 }

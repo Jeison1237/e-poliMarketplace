@@ -187,6 +187,18 @@
                         <span>Total:</span>
                         <strong th:text="'$' + ${#numbers.formatDecimal(order.totalAmount, 1, 2)}">$0.00</strong>
                     </div>
+                    
+                    <!-- Order Status Update -->
+                    <div class="order-status-actions" th:id="'order-' + ${order.id}">
+                        <select class="status-select" th:data-order-id="${order.id}">
+                            <option value="" disabled selected>Cambiar estado</option>
+                            <option value="CONFIRMED" th:selected="${order.status.name() == 'CONFIRMED'}">En Proceso</option>
+                            <option value="SHIPPED" th:selected="${order.status.name() == 'SHIPPED'}">Enviado</option>
+                            <option value="DELIVERED" th:selected="${order.status.name() == 'DELIVERED'}">Entregado</option>
+                            <option value="CANCELLED" th:selected="${order.status.name() == 'CANCELLED'}">Cancelado</option>
+                        </select>
+                        <span class="status-message" style="display: none; margin-left: 1rem;"></span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -289,5 +301,74 @@
 </footer>
 
 <script th:src="@{/js/main.js}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const statusSelects = document.querySelectorAll('.status-select');
+    
+    statusSelects.forEach(select => {
+        select.addEventListener('change', function() {
+            const orderId = this.getAttribute('data-order-id');
+            const newStatus = this.value;
+            const messageSpan = this.nextElementSibling;
+            
+            if (!newStatus) return;
+            
+            // Disable the select while processing
+            this.disabled = true;
+            messageSpan.style.display = 'inline';
+            messageSpan.textContent = 'Actualizando...';
+            messageSpan.style.color = 'var(--warning)';
+            
+            // Send AJAX request to update status
+            fetch(`/sellers/orders/${orderId}/status?status=${newStatus}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    messageSpan.textContent = '✓ ' + data.message;
+                    messageSpan.style.color = 'var(--success)';
+                    
+                    // Update the status badge
+                    const statusBadge = this.closest('.order-card').querySelector('.order-status');
+                    statusBadge.textContent = newStatus;
+                    statusBadge.className = 'order-status status-' + newStatus.toLowerCase();
+                    
+                    // Reset the select
+                    this.value = '';
+                    
+                    // Hide message after 3 seconds
+                    setTimeout(() => {
+                        messageSpan.style.display = 'none';
+                        this.disabled = false;
+                    }, 3000);
+                } else {
+                    messageSpan.textContent = '✗ ' + data.message;
+                    messageSpan.style.color = 'var(--danger)';
+                    this.disabled = false;
+                    
+                    // Hide message after 5 seconds
+                    setTimeout(() => {
+                        messageSpan.style.display = 'none';
+                    }, 5000);
+                }
+            })
+            .catch(error => {
+                messageSpan.textContent = '✗ Error al actualizar';
+                messageSpan.style.color = 'var(--danger)';
+                this.disabled = false;
+                
+                setTimeout(() => {
+                    messageSpan.style.display = 'none';
+                }, 5000);
+            });
+        });
+    });
+});
+</script>
 </body>
 </html>

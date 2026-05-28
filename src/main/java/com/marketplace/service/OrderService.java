@@ -146,4 +146,23 @@ public class OrderService {
         order.setStatus(status);
         return orderRepository.save(order);
     }
+
+    public boolean sellerOwnsOrder(Seller seller, Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Pedido no encontrado: " + orderId));
+        
+        for (OrderItem item : order.getItems()) {
+            if (item.getProduct().getSeller().getId().equals(seller.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Order updateStatusBySeller(Seller seller, Long orderId, Order.Status status) {
+        if (!sellerOwnsOrder(seller, orderId)) {
+            throw new RuntimeException("No tienes permiso para actualizar este pedido");
+        }
+        return updateStatus(orderId, status);
+    }
 }
