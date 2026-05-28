@@ -1,5 +1,7 @@
 package com.marketplace.service;
 
+import com.marketplace.dto.PaymentRequest;
+import com.marketplace.dto.PaymentResponse;
 import com.marketplace.model.*;
 import com.marketplace.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,12 @@ public class OrderService {
     @Autowired
     private CartService cartService;
 
+    @Autowired
+    private PaymentService paymentService;
+
+    /**
+     * Create order with integrated payment processing
+     */
     public Order createOrderFromCart(User user,
                                      String shippingAddress,
                                      String paymentPlan,
@@ -39,7 +47,6 @@ public class OrderService {
         order.setShippingAddress(shippingAddress);
         order.setPaymentPlan(paymentPlan);
         order.setStatus(Order.Status.PENDING);
-        applyPaymentDetails(order, paymentMethod, paypalEmail, cardNumber);
 
         List<OrderItem> orderItems = new ArrayList<>();
         BigDecimal total = BigDecimal.ZERO;
@@ -56,11 +63,60 @@ public class OrderService {
 
         order.setItems(orderItems);
         order.setTotalAmount(total);
-
+        
+        // Save order first with pending status
         Order savedOrder = orderRepository.save(order);
+
+        // Process payment through Stripe
+        PaymentRequest paymentRequest = new PaymentRequest();
+        paymentRequest.setOrderId(savedOrder.getId());
+        paymentRequest.setAmount(total);
+        paymentRequest.setCurrency("usd");
+        paymentRequest.setPaymentMethod(paymentMethod);
+        paymentRequest.setDescription("Pago para el pedido #" + savedOrder.getId());
+        paymentRequest.setCardToken(cardNumber);
+        paymentRequest.setPaypalEmail(paypalEmail);
+
+        PaymentResponse paymentResponse = paymentService.processPayment(paymentRequest);
+
+        if (paymentResponse.isSuccess()) {
+            // Update order with payment details
+            savedOrder.setStripePaymentIntentId(paymentResponse.getPaymentIntentId());
+            savedOrder.setStripeTransactionId(paymentResponse.getTransactionId());
+            savedOrder.setPaymentStatus(paymentResponse.getPaymentStatus());
+            applyPaymentDetails(savedOrder, paymentMethod, paypalEmail, cardNumber);
+            savedOrder.setPaymentReference(paymentResponse.getPaymentIntentId());
+        } else {
+            savedOrder.setPaymentStatus(Order.PaymentStatus.FAILED);
+            savedOrder.setPaymentReference("FAILED-" + UUID.randomUUID());
+            throw new RuntimeException("Error en el pago: " + paymentResponse.getMessage());
+        }
+
+        Order finalOrder = orderRepository.save(savedOrder);
         cartService.clearCart(user);
 
-        return savedOrder;
+        return finalOrder;
+    }
+
+    /**
+     * Confirm a payment after client-side verification
+     */
+    public Order confirmPaymentAndOrder(Long orderId, String paymentIntentId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Pedido no encontrado: " + orderId));
+
+        PaymentResponse paymentResponse = paymentService.confirmPayment(paymentIntentId);
+
+        if (paymentResponse.isSuccess()) {
+            order.setPaymentStatus(Order.PaymentStatus.VERIFIED);
+            order.setStatus(Order.Status.CONFIRMED);
+            order.setStripeTransactionId(paymentResponse.getTransactionId());
+        } else {
+            order.setPaymentStatus(Order.PaymentStatus.FAILED);
+            throw new RuntimeException("Fallo la confirmación del pago: " + paymentResponse.getMessage());
+        }
+
+        return orderRepository.save(order);
     }
 
     private void applyPaymentDetails(Order order,
@@ -73,7 +129,6 @@ public class OrderService {
 
         order.setPaymentMethod(paymentMethod);
         order.setPaymentStatus(Order.PaymentStatus.PENDING);
-        order.setPaymentReference(generatePaymentReference(paymentMethod));
 
         if (paymentMethod == Order.PaymentMethod.PAYPAL) {
             String email = paypalEmail == null ? "" : paypalEmail.trim();
@@ -117,11 +172,6 @@ public class OrderService {
         }
         int dotIndex = email.indexOf('.', atIndex + 2);
         return dotIndex > atIndex + 1 && dotIndex < email.length() - 1;
-    }
-
-    private String generatePaymentReference(Order.PaymentMethod paymentMethod) {
-        String prefix = paymentMethod == Order.PaymentMethod.PAYPAL ? "PP" : "CC";
-        return prefix + "-" + UUID.randomUUID();
     }
 
     public List<Order> findByUser(User user) {
