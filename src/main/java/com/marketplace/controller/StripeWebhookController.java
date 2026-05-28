@@ -56,7 +56,7 @@ public class StripeWebhookController {
         } catch (Exception e) {
             log.error("Webhook error: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Webhook error: " + e.getMessage());
+                    .body("Webhook verification failed");
         }
     }
 
