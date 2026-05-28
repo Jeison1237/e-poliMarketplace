@@ -40,11 +40,12 @@ public class SecurityConfig {
         http
             .authenticationProvider(authenticationProvider())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/sellers/dashboard", "/sellers/become-seller").authenticated()
-                .requestMatchers("/products/new", "/products/*/edit", "/products/*/delete").authenticated()
                 .requestMatchers("/", "/products", "/products/{id}", "/sellers", "/sellers/{id}", "/register", "/login",
-                        "/css/**", "/js/**", "/images/**", "/uploads/**", "/h2-console/**").permitAll()
-                .requestMatchers("/cart/**", "/orders/**", "/profile").authenticated()
+                        "/css/**", "/js/**", "/images/**", "/uploads/**").permitAll()
+                .requestMatchers("/products/new", "/products/*/edit", "/products/*/delete", "/sellers/dashboard")
+                    .hasAnyRole("SELLER", "ADMIN")
+                .requestMatchers("/sellers/become-seller").hasAnyRole("BUYER", "ADMIN")
+                .requestMatchers("/cart/**", "/orders/**", "/profile").hasAnyRole("BUYER", "SELLER", "ADMIN")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
@@ -58,12 +59,6 @@ public class SecurityConfig {
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/")
                 .permitAll()
-            )
-            .csrf(csrf -> csrf
-                .ignoringRequestMatchers("/h2-console/**")
-            )
-            .headers(headers -> headers
-                .frameOptions(frameOptions -> frameOptions.sameOrigin())
             );
 
         return http.build();
