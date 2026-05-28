@@ -53,6 +53,30 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    // Checkout payment method toggle
+    const paymentMethodSelect = document.getElementById('paymentMethod');
+    if (paymentMethodSelect) {
+        const paymentFields = document.querySelectorAll('.payment-method-field');
+        const paypalInput = document.getElementById('paypalEmail');
+        const cardInput = document.getElementById('cardNumber');
+
+        const updatePaymentFields = function () {
+            const method = paymentMethodSelect.value;
+            paymentFields.forEach(function (field) {
+                field.style.display = field.dataset.method === method ? 'block' : 'none';
+            });
+            if (paypalInput) {
+                paypalInput.required = method === 'PAYPAL';
+            }
+            if (cardInput) {
+                cardInput.required = method === 'CARD';
+            }
+        };
+
+        paymentMethodSelect.addEventListener('change', updatePaymentFields);
+        updatePaymentFields();
+    }
+
     // Dashboard enhancements
     initDashboardEnhancements();
 });

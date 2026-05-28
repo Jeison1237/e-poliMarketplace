@@ -40,6 +40,23 @@ public class Order {
     @Column(length = 50)
     private String paymentPlan = "Pago único";
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private PaymentMethod paymentMethod = PaymentMethod.CARD;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private PaymentStatus paymentStatus = PaymentStatus.PENDING;
+
+    @Column(length = 120)
+    private String paymentReference;
+
+    @Column(length = 120)
+    private String paypalEmail;
+
+    @Column(length = 4)
+    private String cardLast4;
+
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
@@ -58,5 +75,13 @@ public class Order {
 
     public enum Status {
         PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED
+    }
+
+    public enum PaymentMethod {
+        PAYPAL, CARD
+    }
+
+    public enum PaymentStatus {
+        PENDING, VERIFIED, FAILED
     }
 }

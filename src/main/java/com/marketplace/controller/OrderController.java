@@ -41,6 +41,9 @@ public class OrderController {
     @PostMapping("/checkout")
     public String checkout(@RequestParam String shippingAddress,
                            @RequestParam(defaultValue = "Pago único") String paymentPlan,
+                           @RequestParam Order.PaymentMethod paymentMethod,
+                           @RequestParam(required = false) String paypalEmail,
+                           @RequestParam(required = false) String cardNumber,
                            Authentication authentication,
                            RedirectAttributes redirectAttributes) {
         if (authentication == null) {
@@ -48,7 +51,8 @@ public class OrderController {
         }
         try {
             userService.findByUsername(authentication.getName()).ifPresent(user -> {
-                Order order = orderService.createOrderFromCart(user, shippingAddress, paymentPlan);
+                Order order = orderService.createOrderFromCart(user, shippingAddress, paymentPlan,
+                        paymentMethod, paypalEmail, cardNumber);
                 redirectAttributes.addFlashAttribute("success",
                         "¡Pedido #" + order.getId() + " creado exitosamente!");
             });
