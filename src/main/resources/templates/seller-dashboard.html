@@ -105,6 +105,80 @@
         </div>
     </div>
 
+    <!-- Orders Section -->
+    <div class="dashboard-section">
+        <div class="section-header">
+            <h2><i class="fas fa-receipt"></i> Pedidos Recibidos</h2>
+        </div>
+
+        <div th:if="${!#lists.isEmpty(sellerOrders)}" class="orders-list">
+            <div class="order-card" th:each="order : ${sellerOrders}">
+                <div class="order-header">
+                    <div class="order-meta">
+                        <span class="order-id">Pedido #<span th:text="${order.id}">0</span></span>
+                        <span class="order-date">
+                            <i class="fas fa-calendar"></i>
+                            <span th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}">Fecha</span>
+                        </span>
+                    </div>
+                    <span class="order-status" th:classappend="${'status-' + order.status.name().toLowerCase()}"
+                          th:text="${order.status}">PENDING</span>
+                </div>
+
+                <div class="order-contact">
+                    <div class="order-info-row">
+                        <i class="fas fa-user"></i>
+                        <span th:text="${order.user.firstName + ' ' + order.user.lastName}">Cliente</span>
+                    </div>
+                    <div class="order-info-row">
+                        <i class="fas fa-envelope"></i>
+                        <a th:href="'mailto:' + ${order.user.email}" th:text="${order.user.email}">correo</a>
+                    </div>
+                    <div class="order-info-row" th:if="${order.user.phone != null}">
+                        <i class="fas fa-phone"></i>
+                        <a th:href="'tel:' + ${order.user.phone}" th:text="${order.user.phone}">teléfono</a>
+                    </div>
+                </div>
+
+                <div class="order-items-preview">
+                    <div class="order-item-row" th:each="item : ${order.items}"
+                         th:if="${item.product.seller.id == seller.id}">
+                        <img th:src="${item.product.imageUrl}" th:alt="${item.product.name}" class="order-item-img">
+                        <div class="order-item-name">
+                            <span th:text="${item.product.name}">Producto</span>
+                            <small>x<span th:text="${item.quantity}">1</span></small>
+                        </div>
+                        <span class="order-item-price"
+                              th:text="'$' + ${#numbers.formatDecimal(item.unitPrice * item.quantity, 1, 2)}">$0.00</span>
+                    </div>
+                </div>
+
+                <div class="order-footer">
+                    <div class="order-address">
+                        <div class="order-info-row">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span th:text="${order.shippingAddress}">Dirección</span>
+                        </div>
+                        <div class="order-info-row">
+                            <i class="fas fa-credit-card"></i>
+                            <span th:text="${order.paymentPlan ?: 'Pago único'}">Pago único</span>
+                        </div>
+                    </div>
+                    <div class="order-total">
+                        <span>Total:</span>
+                        <strong th:text="'$' + ${#numbers.formatDecimal(order.totalAmount, 1, 2)}">$0.00</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(sellerOrders)}" class="empty-state">
+            <i class="fas fa-receipt"></i>
+            <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--gray-900); margin: 0.5rem 0;">No tienes pedidos aún</h3>
+            <p style="color: var(--gray-600); margin: 0.5rem 0 1rem 0;">Cuando un cliente compre, verás su información aquí.</p>
+        </div>
+    </div>
+
     <!-- Products Table -->
     <div class="dashboard-section">
         <div class="section-header">

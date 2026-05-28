@@ -40,6 +40,7 @@ public class OrderController {
 
     @PostMapping("/checkout")
     public String checkout(@RequestParam String shippingAddress,
+                           @RequestParam(defaultValue = "Pago único") String paymentPlan,
                            Authentication authentication,
                            RedirectAttributes redirectAttributes) {
         if (authentication == null) {
@@ -47,7 +48,7 @@ public class OrderController {
         }
         try {
             userService.findByUsername(authentication.getName()).ifPresent(user -> {
-                Order order = orderService.createOrderFromCart(user, shippingAddress);
+                Order order = orderService.createOrderFromCart(user, shippingAddress, paymentPlan);
                 redirectAttributes.addFlashAttribute("success",
                         "¡Pedido #" + order.getId() + " creado exitosamente!");
             });

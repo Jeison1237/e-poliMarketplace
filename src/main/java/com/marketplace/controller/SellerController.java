@@ -3,6 +3,7 @@ package com.marketplace.controller;
 import com.marketplace.model.Product;
 import com.marketplace.model.Seller;
 import com.marketplace.service.ImageService;
+import com.marketplace.service.OrderService;
 import com.marketplace.service.ProductService;
 import com.marketplace.service.SellerService;
 import com.marketplace.service.UserService;
@@ -33,6 +34,9 @@ public class SellerController {
     @Autowired
     private ImageService imageService;
 
+    @Autowired
+    private OrderService orderService;
+
     @GetMapping
     public String listSellers(Model model) {
         model.addAttribute("sellers", sellerService.findAllActive());
@@ -57,6 +61,7 @@ public class SellerController {
             sellerService.findByUser(user).ifPresent(seller -> {
                 model.addAttribute("seller", seller);
                 model.addAttribute("products", productService.findBySeller(seller));
+                model.addAttribute("sellerOrders", orderService.findBySeller(seller));
             });
             model.addAttribute("user", user);
         });

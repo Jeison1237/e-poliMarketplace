@@ -106,6 +106,14 @@
             <!-- Checkout Form -->
             <form th:action="@{/orders/checkout}" method="post" class="checkout-form">
                 <div class="form-group">
+                    <label for="paymentPlan"><i class="fas fa-credit-card"></i> Plan de Pago</label>
+                    <select id="paymentPlan" name="paymentPlan" class="form-control" required>
+                        <option value="Pago único">Pago único</option>
+                        <option value="2 cuotas">2 cuotas</option>
+                        <option value="3 cuotas">3 cuotas</option>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label for="shippingAddress"><i class="fas fa-map-marker-alt"></i> Dirección de Envío</label>
                     <textarea id="shippingAddress" name="shippingAddress" rows="3"
                               placeholder="Ingresa tu dirección de entrega completa"
