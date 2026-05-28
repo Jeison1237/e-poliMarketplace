@@ -36,7 +36,10 @@ public class PaymentApiController {
     public ResponseEntity<PaymentResponse> createPaymentIntent(@RequestBody PaymentRequest request,
                                                                Authentication authentication) {
         if (authentication == null) {
-            return ResponseEntity.status(401).body(new PaymentResponse(false, "No autenticado", null, null, null, null, null));
+            PaymentResponse error = new PaymentResponse();
+            error.setSuccess(false);
+            error.setMessage("No autenticado");
+            return ResponseEntity.status(401).body(error);
         }
 
         try {
@@ -61,8 +64,10 @@ public class PaymentApiController {
             }
         } catch (Exception e) {
             log.error("Error creating payment intent: {}", e.getMessage());
-            return ResponseEntity.badRequest()
-                    .body(new PaymentResponse(false, e.getMessage(), null, null, null, null, null));
+            PaymentResponse error = new PaymentResponse();
+            error.setSuccess(false);
+            error.setMessage(e.getMessage());
+            return ResponseEntity.badRequest().body(error);
         }
     }
 
@@ -75,7 +80,10 @@ public class PaymentApiController {
                                                           @RequestParam Long orderId,
                                                           Authentication authentication) {
         if (authentication == null) {
-            return ResponseEntity.status(401).body(new PaymentResponse(false, "No autenticado", null, null, null, null, null));
+            PaymentResponse error = new PaymentResponse();
+            error.setSuccess(false);
+            error.setMessage("No autenticado");
+            return ResponseEntity.status(401).body(error);
         }
 
         try {
@@ -102,8 +110,10 @@ public class PaymentApiController {
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("Error confirming payment: {}", e.getMessage());
-            return ResponseEntity.badRequest()
-                    .body(new PaymentResponse(false, e.getMessage(), null, null, null, null, null));
+            PaymentResponse error = new PaymentResponse();
+            error.setSuccess(false);
+            error.setMessage(e.getMessage());
+            return ResponseEntity.badRequest().body(error);
         }
     }
 
@@ -115,7 +125,10 @@ public class PaymentApiController {
     public ResponseEntity<PaymentResponse> getPaymentStatus(@PathVariable Long orderId,
                                                             Authentication authentication) {
         if (authentication == null) {
-            return ResponseEntity.status(401).body(new PaymentResponse(false, "No autenticado", null, null, null, null, null));
+            PaymentResponse error = new PaymentResponse();
+            error.setSuccess(false);
+            error.setMessage("No autenticado");
+            return ResponseEntity.status(401).body(error);
         }
 
         try {
@@ -141,8 +154,10 @@ public class PaymentApiController {
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("Error getting payment status: {}", e.getMessage());
-            return ResponseEntity.badRequest()
-                    .body(new PaymentResponse(false, e.getMessage(), null, null, null, null, null));
+            PaymentResponse error = new PaymentResponse();
+            error.setSuccess(false);
+            error.setMessage(e.getMessage());
+            return ResponseEntity.badRequest().body(error);
         }
     }
 
@@ -154,7 +169,10 @@ public class PaymentApiController {
     public ResponseEntity<PaymentResponse> refundPayment(@RequestParam Long orderId,
                                                          Authentication authentication) {
         if (authentication == null) {
-            return ResponseEntity.status(401).body(new PaymentResponse(false, "No autenticado", null, null, null, null, null));
+            PaymentResponse error = new PaymentResponse();
+            error.setSuccess(false);
+            error.setMessage("No autenticado");
+            return ResponseEntity.status(401).body(error);
         }
 
         try {
@@ -177,8 +195,10 @@ public class PaymentApiController {
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("Error refunding payment: {}", e.getMessage());
-            return ResponseEntity.badRequest()
-                    .body(new PaymentResponse(false, e.getMessage(), null, null, null, null, null));
+            PaymentResponse error = new PaymentResponse();
+            error.setSuccess(false);
+            error.setMessage(e.getMessage());
+            return ResponseEntity.badRequest().body(error);
         }
     }
 }
