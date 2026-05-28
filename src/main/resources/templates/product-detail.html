@@ -158,16 +158,5 @@
 </footer>
 
 <script th:src="@{/js/main.js}"></script>
-<script>
-function decrementQty() {
-    const input = document.getElementById('quantity');
-    if (parseInt(input.value) > 1) input.value = parseInt(input.value) - 1;
-}
-function incrementQty() {
-    const input = document.getElementById('quantity');
-    const max = parseInt(input.getAttribute('max'));
-    if (parseInt(input.value) < max) input.value = parseInt(input.value) + 1;
-}
-</script>
 </body>
 </html>

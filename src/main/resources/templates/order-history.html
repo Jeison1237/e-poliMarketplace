@@ -67,8 +67,14 @@
 
             <div class="order-footer">
                 <div class="order-address">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span th:text="${order.shippingAddress}">Dirección</span>
+                    <div class="order-info-row">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span th:text="${order.shippingAddress}">Dirección</span>
+                    </div>
+                    <div class="order-info-row">
+                        <i class="fas fa-credit-card"></i>
+                        <span th:text="${order.paymentPlan ?: 'Pago único'}">Pago único</span>
+                    </div>
                 </div>
                 <div class="order-total">
                     <span>Total:</span>

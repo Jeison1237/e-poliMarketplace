@@ -37,6 +37,9 @@ public class Order {
 
     private String shippingAddress;
 
+    @Column(length = 50)
+    private String paymentPlan = "Pago único";
+
     @Column(updatable = false)
     private LocalDateTime createdAt;
 

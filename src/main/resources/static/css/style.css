@@ -892,7 +892,18 @@ textarea.form-control { resize: vertical; }
     border-top: 1px solid var(--gray-100);
     background: var(--gray-50);
 }
-.order-address { font-size: 0.85rem; color: var(--gray-500); display: flex; align-items: center; gap: 0.4rem; }
+.order-address { font-size: 0.85rem; color: var(--gray-500); display: flex; flex-direction: column; align-items: flex-start; gap: 0.35rem; }
+.order-info-row { display: flex; align-items: center; gap: 0.4rem; }
+.order-contact {
+    padding: 0.75rem 1.5rem;
+    border-top: 1px dashed var(--gray-100);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--gray-600);
+}
+.order-contact a { color: var(--primary); font-weight: 600; }
 .order-total { font-size: 1rem; display: flex; align-items: center; gap: 0.5rem; }
 .order-total strong { font-size: 1.2rem; color: var(--primary); }
 

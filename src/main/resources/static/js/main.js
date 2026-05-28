@@ -22,22 +22,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Cart quantity increment/decrement
-    document.querySelectorAll('.qty-btn').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            const input = this.parentElement.querySelector('.qty-input');
-            if (!input) return;
-            const min = parseInt(input.min) || 1;
-            const max = parseInt(input.max) || 9999;
-            let val = parseInt(input.value) || 1;
-            if (this.textContent.trim() === '+') {
-                if (val < max) input.value = val + 1;
-            } else {
-                if (val > min) input.value = val - 1;
-            }
-        });
-    });
-
     // Product image preview on hover
     const productImages = document.querySelectorAll('.product-image');
     productImages.forEach(function (img) {

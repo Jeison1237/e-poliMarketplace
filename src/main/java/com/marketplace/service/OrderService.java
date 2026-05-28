@@ -21,7 +21,7 @@ public class OrderService {
     @Autowired
     private CartService cartService;
 
-    public Order createOrderFromCart(User user, String shippingAddress) {
+    public Order createOrderFromCart(User user, String shippingAddress, String paymentPlan) {
         Cart cart = cartService.findByUser(user);
 
         if (cart.getItems().isEmpty()) {
@@ -31,6 +31,7 @@ public class OrderService {
         Order order = new Order();
         order.setUser(user);
         order.setShippingAddress(shippingAddress);
+        order.setPaymentPlan(paymentPlan);
         order.setStatus(Order.Status.PENDING);
 
         List<OrderItem> orderItems = new ArrayList<>();
@@ -65,6 +66,10 @@ public class OrderService {
 
     public List<Order> findAll() {
         return orderRepository.findAll();
+    }
+
+    public List<Order> findBySeller(Seller seller) {
+        return orderRepository.findBySellerOrderByCreatedAtDesc(seller);
     }
 
     public Order updateStatus(Long orderId, Order.Status status) {
