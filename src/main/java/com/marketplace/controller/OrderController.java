@@ -2,6 +2,7 @@ package com.marketplace.controller;
 
 import com.marketplace.dto.PaymentResponse;
 import com.marketplace.model.Order;
+import com.marketplace.model.User;
 import com.marketplace.service.OrderService;
 import com.marketplace.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,14 +94,40 @@ public class OrderController {
     @PostMapping("/{id}/confirm-payment")
     @ResponseBody
     public ResponseEntity<PaymentResponse> confirmPayment(@PathVariable Long id,
-                                                          @RequestParam String paymentIntentId) {
+                                                          @RequestParam String paymentIntentId,
+                                                          Authentication authentication) {
+        if (authentication == null) {
+            PaymentResponse response = new PaymentResponse();
+            response.setSuccess(false);
+            response.setMessage("No autenticado");
+            return ResponseEntity.status(401).body(response);
+        }
+        
         try {
-            Order order = orderService.confirmPaymentAndOrder(id, paymentIntentId);
+            // Validate that the user owns the order
+            Order order = orderService.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
+            
+            // Check if current user owns this order
+            User currentUser = userService.findByUsername(authentication.getName())
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            
+            if (!order.getUser().getId().equals(currentUser.getId())) {
+                throw new RuntimeException("No tienes permiso para confirmar este pago");
+            }
+            
+            // Validate that the payment intent belongs to this order
+            if (!order.getStripePaymentIntentId().equals(paymentIntentId)) {
+                throw new RuntimeException("El ID de intención de pago no coincide con el pedido");
+            }
+            
+            Order confirmedOrder = orderService.confirmPaymentAndOrder(id, paymentIntentId);
             PaymentResponse response = new PaymentResponse();
             response.setSuccess(true);
             response.setMessage("Pago confirmado exitosamente");
-            response.setPaymentStatus(order.getPaymentStatus());
-            response.setTransactionId(order.getStripeTransactionId());
+            response.setPaymentStatus(confirmedOrder.getPaymentStatus());
+            response.setTransactionId(confirmedOrder.getStripeTransactionId());
+            response.setOrderId(confirmedOrder.getId());
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             PaymentResponse response = new PaymentResponse();
