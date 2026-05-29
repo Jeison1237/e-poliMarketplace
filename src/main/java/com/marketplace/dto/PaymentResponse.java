@@ -19,4 +19,5 @@ public class PaymentResponse {
     private BigDecimal amount;
     private String clientSecret;
     private String redirectUrl;
+    private Long orderId;
 }

@@ -82,6 +82,7 @@ public class OrderService {
         if (paymentResponse.isSuccess()) {
             // Update order with payment details
             savedOrder.setStripePaymentIntentId(paymentResponse.getPaymentIntentId());
+            savedOrder.setStripeClientSecret(paymentResponse.getClientSecret());
             savedOrder.setStripeTransactionId(paymentResponse.getTransactionId());
             savedOrder.setPaymentStatus(paymentResponse.getPaymentStatus());
             applyPaymentDetails(savedOrder, paymentMethod, paypalEmail, cardNumber);

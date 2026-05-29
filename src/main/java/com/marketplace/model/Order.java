@@ -54,6 +54,9 @@ public class Order {
     @Column(length = 255)
     private String stripePaymentIntentId;
 
+    @Column(length = 1000)
+    private String stripeClientSecret;
+
     @Column(length = 255)
     private String stripeTransactionId;
 
